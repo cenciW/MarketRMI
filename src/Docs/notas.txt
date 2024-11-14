@@ -1,0 +1,48 @@
+Utils.Product
++id
++name
++price (qual data foi inserido)
++lojaId (loja onde o produto tem esse preço)
++usernameId (who inserted the product)
++dateInserted
+
+
+
+Market
+
+Utils.User (só o server pode ver)
++username (no ficheiro tem que ser criado manualmente e nao pode ser alterado via aplicacao)
++password
+>Apenas uma tentativa de login, se errar sua aplicação será finalizada
+
+>Cada user pode executar:
+    getAllProducts()
+    getProductByName()
+    getBestSellerProductByMarketId()
+
+>Cada user pode alterar o preço de um produto
+    Ficando registrado na lista de produtos
+    >userId (que alterou)
+    >userName
+    >dateModified
+
+>Cada user pode adicionar novos produtos a lista de produtos
+    >productName
+    >productPrice
+    >markedId (mercado que tem esse preço)
+    >userId
+    >username
+    >dateInserted
+    *pode conter mesmo nome de produto desde que em lojas diferentes
+    >Sempre que o preço do produto for alterado todos os clientes conectados devem ser notificados (novo preço do produto é>)
+
+
+*GESTAO APROPRIADA DE EXCEPTIONS
+
+
+Guardar tudo isso num ficheiro mas depois tem que poder consultar tbm
+Client nao tem acesso ao ficheiro só o servidor
+Se ficheiro ja criado:
+    Alterar ( sempre que o produto for criado ou preço alterado isso deve ser gravado no ficheiro)
+se não
+    Criar
