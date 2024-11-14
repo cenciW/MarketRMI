@@ -1,18 +1,27 @@
 package client.utils;
 
 import contracts.ServerInterface;
+import entitites.Product;
+import entitites.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 public class MenuHandler {
 
     private BufferedReader br;
     private ServerInterface serverInterface;
+    private User user;
+
 
 
     private void addProduct() {
-        System.out.println("Adicionando produto");
+        try {
+            serverInterface.addProduct(new Product(), user);
+        } catch (RemoteException e) {
+            System.err.println("Ocorreu um erro na comunicação com o servidor " + e.getMessage());
+        }
     }
 
     private void listProducts() {
@@ -23,9 +32,10 @@ public class MenuHandler {
         System.out.println("Atualizar produto");
     }
 
-    public MenuHandler(BufferedReader br, ServerInterface serverInterface) {
+    public MenuHandler(BufferedReader br, ServerInterface serverInterface, User user) {
         this.br = br;
         this.serverInterface = serverInterface;
+        this.user = user;
     }
 
 

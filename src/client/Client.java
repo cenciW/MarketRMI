@@ -44,7 +44,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
             //buscar no arquivo de texto com o file handler
 
-            boolean auth = serverInterface.login(user, client);
+            boolean auth = serverInterface.login(user);
             if(auth) {
                 System.out.println("Usuário autenticado com sucesso!");
             }else{
@@ -52,7 +52,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 System.exit(0);
             }
 
-            new MenuHandler(br, serverInterface).startMenu();
+            new MenuHandler(br, serverInterface, user).startMenu();
 
             System.exit(0);
         } catch (IOException e) {

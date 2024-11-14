@@ -33,7 +33,7 @@ import java.io.Serializable;
 */
 public class User implements Serializable {
     private String username, password;
-    public ClientInterface clientInterface;
+    private ClientInterface clientInterface;
     boolean isLoggedIn = false;
 
     public User(){
@@ -76,6 +76,13 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public ClientInterface getClientInterface() {
+        return clientInterface;
+    }
+
+    public void setClientInterface(ClientInterface clientInterface) {
+        this.clientInterface = clientInterface;
+    }
 }
 
 

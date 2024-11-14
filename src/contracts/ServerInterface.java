@@ -1,5 +1,6 @@
 package contracts;
 
+import entitites.Product;
 import entitites.User;
 
 import java.rmi.Remote;
@@ -12,6 +13,7 @@ public interface ServerInterface extends Remote {
     //enviamos a interface do cliente para conseguir comunicar
     //cliente se liga o servidor, por isso ele tem que se registrar para conseguir comunicar
     //interface do cliente para o server para o server conseguir chamar os métodos do cliente
-    boolean login(User user, ClientInterface clientInterface) throws RemoteException;
+    boolean login(User user) throws RemoteException;
 
+    void addProduct(Product product, User user) throws RemoteException;
 }

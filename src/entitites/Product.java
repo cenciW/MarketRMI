@@ -1,5 +1,7 @@
 package entitites;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 
 /*Utils.Product
@@ -9,7 +11,7 @@ import java.util.Date;
 +lojaId (loja onde o produto tem esse preço)
 +usernameId (who inserted the product)
 +dateInserted*/
-public class Product {
+public class Product implements Serializable {
     private int id;
     private String name;
     private double price;
@@ -19,6 +21,9 @@ public class Product {
     private Date dateLastModified;
     private User user;
 
+    public Product() {
+
+    }
     public Product(int id, String name, double price, String marketName, Date dateInserted, Date dateLastModified, User user) {
         this.id = id;
         this.name = name;
