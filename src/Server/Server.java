@@ -32,15 +32,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         ) {
             //Instancing Server
             Server server = new Server();
-
             //creating registry
             LocateRegistry.createRegistry(6666);
-
             //rebind
             Naming.rebind("rmi://localhost:6666/market", server);
-
             System.out.println("Server preparado para receber clientes.");
-
             String messageToClients;
 
             while (true) {
@@ -54,7 +50,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         } catch (IOException e) {
             System.err.println("Erro ao tentar ler o texto introduzido: " + e.getMessage());
         }
-
     }
 
     @Override
@@ -89,8 +84,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         //server pedindo para enviarmos as mensagens aos outros clientes
         System.out.print("Introduza a mensagem que deseja enviar para todos os clientes:\n:> ");
-
         //se quiser sair tem que limpar a estrutura do servidor
-
     }
 }
