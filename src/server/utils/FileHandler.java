@@ -57,8 +57,11 @@ public class FileHandler {
 
             return Optional.of(user);
 
+        }  catch (FileNotFoundException e) {
+            System.err.println("Arquivo não encontrado: " + e.getMessage());
+            return Optional.empty();
         } catch (IOException e) {
-            System.err.println("FileHandler: Erro de I/O na leitura dos dados");
+            System.err.println("FileHandler: Erro de I/O na leitura dos dados: " + e.getMessage());
             return Optional.empty();
         }
 

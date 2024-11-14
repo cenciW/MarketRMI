@@ -1,5 +1,6 @@
 package client;
 
+import client.utils.MenuHandler;
 import contracts.ServerInterface;
 import contracts.ClientInterface;
 import entitites.User;
@@ -51,13 +52,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 System.exit(0);
             }
 
+            new MenuHandler(br, serverInterface).startMenu();
 
-            while (!messageToServer.equalsIgnoreCase("sair")) {
-                System.out.print("Introduza a mensagem que deseja enviar ao servidor:\n:> ");
-                messageToServer = br.readLine();
-
-                serverInterface.printOnServer(username, messageToServer);
-            }
             System.exit(0);
         } catch (IOException e) {
             System.err.println("Erro ao tentar ler o texto introduzido: " + e.getMessage());

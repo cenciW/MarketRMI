@@ -26,7 +26,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     }
 
     public static void main(String[] args) {
-        file = new FileHandler(new File("src/Database/usersList.txt").getAbsolutePath());
+        file = new FileHandler(new File("src/server/database/usersList.txt").getAbsolutePath());
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         ) {

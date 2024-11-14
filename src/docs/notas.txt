@@ -18,7 +18,7 @@ entitites.User (só o server pode ver)
 >Cada user pode executar:
     getAllProducts()
     getProductByName()
-    getBestSellerProductByMarketId()
+    getProductByMarketId()
 
 >Cada user pode alterar o preço de um produto
     Ficando registrado na lista de produtos
