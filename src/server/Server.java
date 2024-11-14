@@ -1,10 +1,10 @@
-package Server;
+package server;
 
 
-import Utils.ClientInterface;
-import Utils.FileHandler;
-import Utils.ServerInterface;
-import Utils.User;
+import utils.ClientInterface;
+import utils.FileHandler;
+import utils.ServerInterface;
+import utils.User;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,14 +56,18 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public boolean login(User user, ClientInterface clientInterface) throws RemoteException {
 
         Optional<User> userOptional = file.searchUserOnFile(user);
+        boolean ret = false;
         if(userOptional.isEmpty()) {
-//            System.out.print("\nUsuário não encontrado.");
-            return false;
+            System.out.println("Cliente: " + user.getUsername() + " tentativa de login não autorizada");
+            ret = false;
+        } else {
+            ret = true;
+            System.out.println("Cliente: " + user.getUsername() + " entrou no servidor.");
+            usersList.add(new User(user.getUsername(), user.getPassword(), clientInterface));
         }
-        System.out.println("Cliente: " + user.getUsername() + " entrou no servidor.");
+
         System.out.print("Introduza a mensagem que deseja enviar para todos os clientes:\n:> ");
-        usersList.add(new User(user.getUsername(), user.getPassword(), clientInterface));
-        return true;
+        return ret;
     }
 
     @Override

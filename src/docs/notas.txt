@@ -1,4 +1,4 @@
-Utils.Product
+utils.Product
 +id
 +name
 +price (qual data foi inserido)
@@ -10,7 +10,7 @@ Utils.Product
 
 Market
 
-Utils.User (só o server pode ver)
+utils.User (só o server pode ver)
 +username (no ficheiro tem que ser criado manualmente e nao pode ser alterado via aplicacao)
 +password
 >Apenas uma tentativa de login, se errar sua aplicação será finalizada
@@ -41,7 +41,7 @@ Utils.User (só o server pode ver)
 
 
 Guardar tudo isso num ficheiro mas depois tem que poder consultar tbm
-Client nao tem acesso ao ficheiro só o servidor
+client nao tem acesso ao ficheiro só o servidor
 Se ficheiro ja criado:
     Alterar ( sempre que o produto for criado ou preço alterado isso deve ser gravado no ficheiro)
 se não

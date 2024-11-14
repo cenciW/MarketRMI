@@ -1,8 +1,8 @@
-package Client;
+package client;
 
-import Utils.ServerInterface;
-import Utils.ClientInterface;
-import Utils.User;
+import utils.ServerInterface;
+import utils.ClientInterface;
+import utils.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
