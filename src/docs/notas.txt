@@ -1,4 +1,4 @@
-utils.Product
+entitites.Product
 +id
 +name
 +price (qual data foi inserido)
@@ -10,7 +10,7 @@ utils.Product
 
 Market
 
-utils.User (só o server pode ver)
+entitites.User (só o server pode ver)
 +username (no ficheiro tem que ser criado manualmente e nao pode ser alterado via aplicacao)
 +password
 >Apenas uma tentativa de login, se errar sua aplicação será finalizada

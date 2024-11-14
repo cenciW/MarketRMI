@@ -1,4 +1,6 @@
-package utils;
+package entitites;
+
+import contracts.ClientInterface;
 
 import java.io.Serializable;
 

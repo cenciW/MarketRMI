@@ -1,4 +1,7 @@
-package utils;
+package server.utils;
+
+import entitites.Product;
+import entitites.User;
 
 import java.io.*;
 import java.text.ParseException;

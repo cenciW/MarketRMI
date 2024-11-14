@@ -1,4 +1,6 @@
-package utils;
+package contracts;
+
+import entitites.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

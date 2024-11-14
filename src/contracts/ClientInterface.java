@@ -1,4 +1,4 @@
-package utils;
+package contracts;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

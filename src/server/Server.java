@@ -1,10 +1,10 @@
 package server;
 
 
-import utils.ClientInterface;
-import utils.FileHandler;
-import utils.ServerInterface;
-import utils.User;
+import contracts.ClientInterface;
+import server.utils.FileHandler;
+import contracts.ServerInterface;
+import entitites.User;
 
 import java.io.BufferedReader;
 import java.io.File;
