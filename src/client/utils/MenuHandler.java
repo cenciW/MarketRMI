@@ -7,20 +7,67 @@ import entitites.User;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 public class MenuHandler {
 
     private BufferedReader br;
     private ServerInterface serverInterface;
     private User user;
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
 
+
+
+//    this.id = id;
+//        this.name = name;
+//        this.price = price;
+//        this.marketName = marketName;
+//        this.dateInserted = dateInserted;
+////        this.dateLastModified = dateLastModified;
+//        this.user = user;
 
     private void addProduct() {
         try {
-            serverInterface.addProduct(new Product(), user);
+            Product product = new Product();
+
+            System.out.println("Insira um Produto: ");
+
+            System.out.print("Nome do produto: ");
+            product.setName(br.readLine());
+
+            do{
+                double price;
+                try{
+                    System.out.print("Preço do produto: ");
+                    price = Double.parseDouble(br.readLine());
+                    product.setPrice(price);
+                    break;
+
+                }catch (NumberFormatException e){
+                    System.out.println("ERRO: O preço do produto deve ser um número.");
+                }
+
+            }while(true);
+
+            System.out.print("Nome do mercado que tem o produto: ");
+            product.setMarketName(br.readLine());
+
+            ZonedDateTime nowInUTC = ZonedDateTime.now();
+            Date d = Date.from(nowInUTC.toInstant());
+            product.setDateInserted(d);
+            product.setDateLastModified(d);
+
+            product.setUser(user);
+
+            serverInterface.addProduct(product, user);
+
         } catch (RemoteException e) {
             System.err.println("Ocorreu um erro na comunicação com o servidor " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Erro de I/O ao inserir o produto: " + e.getMessage());
         }
     }
 

@@ -2,6 +2,7 @@ package server;
 
 
 import entitites.Product;
+import server.controllers.ProductController;
 import server.handlers.FileHandler;
 import contracts.ServerInterface;
 import entitites.User;
@@ -24,8 +25,9 @@ import java.util.TimeZone;
 public class Server extends UnicastRemoteObject implements ServerInterface {
     static ArrayList<User> usersList = new ArrayList<User>();
     static FileHandler file;
+    static ProductController productController;
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
     public Server() throws RemoteException {
         super();
@@ -38,6 +40,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         ) {
+            productController = new ProductController();
             //Instancing Server
             Server server = new Server();
             //creating registry
@@ -65,7 +68,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         Optional<User> userOptional = file.searchUserOnFile(user);
         boolean ret = false;
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             System.out.println("Cliente: " + user.getUsername() + " tentativa de login não autorizada");
             ret = false;
         } else {
@@ -78,15 +81,23 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         return ret;
     }
 
+
     @Override
     public void addProduct(Product product, User user) throws RemoteException {
         ZonedDateTime nowInUTC = ZonedDateTime.now();
         Date d = Date.from(nowInUTC.toInstant());
         String[] formatted = dateFormat.format(d).split(" ");
         String formattedFinal = formatted[0] + "H" + formatted[1];
+
         System.out.println("Usuário " + user.getUsername() + " irá adicionar um produto às " + formattedFinal);
-        user.getClientInterface().printOnClient("Adicionando produto");
+        productController.insertProduct(product, user);
+
+        System.out.println("O "+ user.getUsername() + " adicionou o produto: " + product.writeLineFile());
+        user.getClientInterface().printOnClient("\nAdicionando produto:\n" + product.writeLineFile());
     }
+
+
+
 
     @Override
     public void printOnServer(String clientName, String msgFromClient) throws RemoteException {

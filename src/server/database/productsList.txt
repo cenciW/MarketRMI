@@ -1,0 +1,6 @@
+name;price;marketName;dateInserted;dateLastModified;username
+Cervejinha;10.99;Pigo;Fri Nov 15 18:27:19 GMT 2024;Fri Nov 15 18:27:19 GMT 2024;jadir
+p;12.0;p;18:34:32H15-11-2024;18:34:32H15-11-2024;adm
+ap;10.0;sds;18:38:27H15-11-2024;18:38:27H15-11-2024;adm
+pdas;1230.0;das;18:46:11H15-11-2024;18:46:11H15-11-2024;adm
+adm;10.0;market;18:57:03H15-11-2024;18:57:03H15-11-2024;adm
