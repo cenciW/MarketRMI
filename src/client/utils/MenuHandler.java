@@ -71,8 +71,11 @@ public class MenuHandler {
         }
     }
 
-    private void listProducts() {
+    private void listProducts() throws RemoteException {
         System.out.println("Listar produtos");
+        for (Product allProduct : serverInterface.getAllProducts()) {
+            System.out.println(allProduct.writeLineFile());
+        }
     }
 
     private void updatePriceProduct() {
@@ -86,7 +89,7 @@ public class MenuHandler {
     }
 
 
-    public void startMenu() {
+    public void startMenu() throws RemoteException {
         int item = 0;
         while (true) {
             System.out.println("=============== RMI MARKET ===============");

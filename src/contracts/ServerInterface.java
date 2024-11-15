@@ -5,6 +5,7 @@ import entitites.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface ServerInterface extends Remote {
     //metodo que o cliente utiliza no servidor para escrever coisas no servidor
@@ -16,4 +17,5 @@ public interface ServerInterface extends Remote {
     boolean login(User user) throws RemoteException;
 
     void addProduct(Product product, User user) throws RemoteException;
+    ArrayList<Product> getAllProducts() throws RemoteException;
 }

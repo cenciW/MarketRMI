@@ -32,9 +32,9 @@ public class ProductController {
 
     }
 
-    public List<Product> getAllProducts() throws RemoteException {
+    public ArrayList<Product> getAllProducts() throws RemoteException {
         //ler todas as linhas do file handler
-        List<Product> products = new ArrayList<>();
+        ArrayList<Product> products = new ArrayList<>();
 
         products = fileHandler.readAllProducts();
 

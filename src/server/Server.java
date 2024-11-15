@@ -24,6 +24,7 @@ import java.util.TimeZone;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
     static ArrayList<User> usersList = new ArrayList<User>();
+    static ArrayList<Product> productsList = new ArrayList<Product>();
     static FileHandler file;
     static ProductController productController;
 
@@ -94,6 +95,16 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         System.out.println("O "+ user.getUsername() + " adicionou o produto: " + product.writeLineFile());
         user.getClientInterface().printOnClient("\nAdicionando produto:\n" + product.writeLineFile());
+    }
+
+    public ArrayList<Product> getAllProducts() throws RemoteException {
+        productsList = productController.getAllProducts();
+
+        System.out.println("Listagem de todos os produtos: ");
+        for(Product product : productsList) {
+            System.out.println(product.writeLineFile());
+        }
+        return productsList;
     }
 
 

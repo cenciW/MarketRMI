@@ -15,7 +15,7 @@ import java.util.Optional;
 public class FileHandler {
     private final String filePath;
     private File file;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd");
 
     public FileHandler(String filePath) {
         this.filePath = filePath;
@@ -100,11 +100,16 @@ public class FileHandler {
     }
 
     // Método para ler todos os produtos
-    public List<Product> readAllProducts() {
-        List<Product> products = new ArrayList<>();
+    public ArrayList<Product> readAllProducts() {
+        ArrayList<Product> products = new ArrayList<>();
+        int cont = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
+                if(cont == 0){
+                    cont++;
+                    continue;
+                }
                 Product product = parseProduct(line);
                 if (product != null) {
                     products.add(product);
@@ -119,17 +124,18 @@ public class FileHandler {
     // Método para converter uma linha do arquivo em um objeto Utils.Product
     private Product parseProduct(String line) {
         try {
+            //adm;10.0;market;18:57:03H15-11-2024;18:57:03H15-11-2024;adm
             String[] fields = line.split(";");
-            int id = Integer.parseInt(fields[0]);
-            String name = fields[1];
-            double price = Double.parseDouble(fields[2]);
-            String marketName = fields[3];
-            Date dateInserted = dateFormat.parse(fields[4]);
-            Date dateLastModified = dateFormat.parse(fields[5]);
-            // Substitua `null` pelo usuário real, conforme o design da classe `Utils.User`
-            User user = null;
+            String name = fields[0];
+            double price = Double.parseDouble(fields[1]);
+            String marketName = fields[2];
 
-            return new Product(id, name, price, marketName, dateInserted, dateLastModified, user);
+            Date dateInserted = dateFormat.parse(fields[3].replace("H", " "));
+            Date dateLastModified = dateFormat.parse(fields[4].replace("H", " "));
+
+            String username = fields[5];
+
+            return new Product(name, price, marketName, dateInserted, dateLastModified, username);
         } catch (ParseException | NumberFormatException e) {
             System.out.println("Erro ao converter a linha em um produto: " + e.getMessage());
             return null;
