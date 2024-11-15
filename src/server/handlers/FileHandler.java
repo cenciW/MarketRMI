@@ -1,4 +1,4 @@
-package server.utils;
+package server.handlers;
 
 import entitites.Product;
 import entitites.User;

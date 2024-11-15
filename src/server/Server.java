@@ -1,13 +1,11 @@
 package server;
 
 
-import contracts.ClientInterface;
 import entitites.Product;
-import server.utils.FileHandler;
+import server.handlers.FileHandler;
 import contracts.ServerInterface;
 import entitites.User;
 
-import javax.swing.text.DateFormatter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +14,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
