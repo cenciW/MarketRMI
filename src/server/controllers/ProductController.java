@@ -3,6 +3,7 @@ package server.controllers;
 import entitites.Product;
 import entitites.User;
 import server.handlers.FileHandler;
+import server.interfaces.IProductController;
 
 import javax.swing.plaf.ProgressBarUI;
 import java.io.File;
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static server.Server.dateFormat;
 
-public class ProductController {
+public class ProductController implements IProductController{
     FileHandler fileHandler;
     public ProductController() {
         fileHandler = new FileHandler(new File("src/server/database/productsList.txt").getAbsolutePath());
@@ -51,7 +52,7 @@ public class ProductController {
         return null;
     }
 
-    public List<Product> getProductByMarket(String marketName) throws RemoteException {
+    public ArrayList<Product> getProductByMarket(String marketName) throws RemoteException {
         return null;
     }
 

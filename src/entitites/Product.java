@@ -47,7 +47,6 @@ public class Product implements Serializable {
         this.user = username;
     }
 
-
     public String getName() {
         return name;
     }
