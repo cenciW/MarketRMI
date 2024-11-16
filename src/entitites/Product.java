@@ -1,9 +1,8 @@
 package entitites;
 
-import java.io.Serial;
+import utils.DateUtils;
+
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 /*Utils.Product
@@ -22,19 +21,16 @@ public class Product implements Serializable {
     private Date dateInserted;
     private Date dateLastModified;
     public String user;
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
-
-
     public Product() {
 
     }
 
-    public Product(String name, double price, String marketName, Date dateInserted, /*Date dateLastModified,*/ User user) {
+    public Product(String name, double price, String marketName, User user) {
         this.name = name;
         this.price = price;
         this.marketName = marketName;
-        this.dateInserted = dateInserted;
-//        this.dateLastModified = dateLastModified;
+        this.dateInserted = null;
+        this.dateLastModified = null;
         this.user = user.getUsername();
     }
 
@@ -91,20 +87,13 @@ public class Product implements Serializable {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user.getUsername();
-    }
-
-    private String convertDateToString(Date d) {
-        String[] formattedInserted = dateFormat.format(d).split(" ");
-
-        return formattedInserted[0] + "H" + formattedInserted[1];
-
+    public void setUser(String username) {
+        this.user = username;
     }
 
 
     public String writeLineFile() {
-        return name + ";" + price + ";" + marketName + ";" + convertDateToString(this.getDateInserted()) + ";" + convertDateToString(this.getDateLastModified()) + ";" + user;
+        return name + ";" + price + ";" + marketName + ";" + DateUtils.dateToString(this.getDateInserted()).replace("Z[UTC]", "") + ";" + DateUtils.dateToString(this.getDateLastModified()).replace("Z[UTC]", "") + ";" + user;
     }
 
     public boolean isValid() {
@@ -119,10 +108,10 @@ public class Product implements Serializable {
     @Override
     public String toString() {
         return  "\t\n- Product Name: " + name +
-                "\t\n- Price: " + price +
+                "\t\n- Price: €" + price +
                 "\t\n- Market Name: " + marketName +
-                "\t\n- Date Inserted: " + dateInserted +
-                "\t\n- Date Last Modified: " + dateLastModified +
+                "\t\n- Date Inserted: " + DateUtils.dateToLocalString(dateInserted) +
+                "\t\n- Date Last Modified: " + DateUtils.dateToLocalString(dateLastModified) +
                 "\t\n- Username: " + user;
     }
 
