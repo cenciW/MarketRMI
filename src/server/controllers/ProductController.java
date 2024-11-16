@@ -53,7 +53,17 @@ public class ProductController implements IProductController{
     }
 
     public ArrayList<Product> getProductByMarket(String marketName) throws RemoteException {
-        return null;
+        ArrayList<Product> products = new ArrayList<>();
+        ArrayList<Product> productsReturn = new ArrayList<>();
+
+        products = fileHandler.readAllProducts();
+        for (Product product : products) {
+            if(product.getMarketName().equalsIgnoreCase(marketName)){
+                productsReturn.add(product);
+            }
+        }
+
+        return productsReturn;
     }
 
 }

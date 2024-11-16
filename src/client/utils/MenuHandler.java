@@ -19,8 +19,6 @@ public class MenuHandler {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
 
-
-
 //    this.id = id;
 //        this.name = name;
 //        this.price = price;
@@ -38,19 +36,19 @@ public class MenuHandler {
             System.out.print("Nome do produto: ");
             product.setName(br.readLine());
 
-            do{
+            do {
                 double price;
-                try{
+                try {
                     System.out.print("Preço do produto: ");
                     price = Double.parseDouble(br.readLine());
                     product.setPrice(price);
                     break;
 
-                }catch (NumberFormatException e){
+                } catch (NumberFormatException e) {
                     System.out.println("ERRO: O preço do produto deve ser um número.");
                 }
 
-            }while(true);
+            } while (true);
 
             System.out.print("Nome do mercado que tem o produto: ");
             product.setMarketName(br.readLine());
@@ -74,8 +72,21 @@ public class MenuHandler {
     private void listProducts() throws RemoteException {
         System.out.println("Listar produtos");
         for (Product allProduct : serverInterface.getAllProducts()) {
-            System.out.println(allProduct.writeLineFile());
+            System.out.println(allProduct.toString());
         }
+        System.out.println();
+    }
+
+    private void listProductsByMarketName(String marketName) throws RemoteException {
+        System.out.println("Lista de produtos do mercado: " + marketName);
+
+        for (Product allProduct : serverInterface.getProductByMarketName(marketName)) {
+//            if (allProduct.getMarketName().equalsIgnoreCase(marketName)) {
+            System.out.println(allProduct.toString());
+//            }
+        }
+        System.out.println();
+
     }
 
     private void updatePriceProduct() {
@@ -89,7 +100,7 @@ public class MenuHandler {
     }
 
 
-    public void startMenu() throws RemoteException {
+    public void startMenu() throws IOException {
         int item = 0;
         while (true) {
             System.out.println("=============== RMI MARKET ===============");
@@ -116,7 +127,34 @@ public class MenuHandler {
                     addProduct();
                     break;
                 case 2:
-                    listProducts();
+                    boolean showSubmenu = true;
+                    while (showSubmenu) {
+                        System.out.println("========== MENU DE PRODUTOS ==========");
+                        System.out.println("=== 1. Listar todos os produtos ======");
+                        System.out.println("=== 2. Buscar produto por Mercado ====");
+                        System.out.println("=== 3. Voltar ao menu principal ======");
+                        System.out.println("======================================");
+                        System.out.print("Escolha uma opção: ");
+
+                        int submenuOption = Integer.parseInt(br.readLine());
+
+                        switch (submenuOption) {
+                            case 1:
+                                listProducts(); // Método para listar todos os produtos
+                                break;
+                            case 2:
+                                System.out.print("Digite o nome do mercado: ");
+                                String marketName = br.readLine();
+
+                                listProductsByMarketName(marketName);
+                                break;
+                            case 3:
+                                showSubmenu = false; // Sai do submenu
+                                break;
+                            default:
+                                System.out.println("Opção inválida. Tente novamente.");
+                        }
+                    }
                     break;
                 case 3:
                     updatePriceProduct();

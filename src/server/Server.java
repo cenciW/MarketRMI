@@ -93,7 +93,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         System.out.println("Usuário " + user.getUsername() + " irá adicionar um produto às " + formattedFinal);
         productController.insertProduct(product, user);
 
-        System.out.println("O "+ user.getUsername() + " adicionou o produto: " + product.writeLineFile());
+        System.out.println("O " + user.getUsername() + " adicionou o produto: " + product.writeLineFile());
         user.getClientInterface().printOnClient("\nAdicionando produto:\n" + product.writeLineFile());
     }
 
@@ -101,13 +101,31 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         productsList = productController.getAllProducts();
 
         System.out.println("Listagem de todos os produtos: ");
-        for(Product product : productsList) {
+        for (Product product : productsList) {
             System.out.println(product.writeLineFile());
         }
         return productsList;
     }
 
 
+    @Override
+    public ArrayList<Product> getProductByMarketName(String marketName) {
+        try {
+            System.out.println("Listagem de produtos do mercado: " + marketName);
+            productsList = productController.getProductByMarket(marketName);
+            for (Product product : productsList) {
+                System.out.println(product.writeLineFile());
+            }
+
+        } catch (RemoteException e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
+        if(productsList.isEmpty()) {
+            System.out.println("Lista de produtos vazia.");
+            return new ArrayList<>();
+        }
+        return productsList;
+    }
 
 
     @Override
