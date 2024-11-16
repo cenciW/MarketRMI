@@ -7,7 +7,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public interface ServerInterface extends Remote {
+public interface ServerRemoteInterface extends Remote {
     //metodo que o cliente utiliza no servidor para escrever coisas no servidor
     void printOnServer(String clientName, String msgFromClient) throws RemoteException;
 
@@ -19,9 +19,6 @@ public interface ServerInterface extends Remote {
     void addProduct(Product product, User user) throws RemoteException;
     ArrayList<Product> getAllProducts(User user) throws RemoteException;
     ArrayList<Product> getProductByMarketName(User user, String marketName) throws RemoteException;
-    Product updateProduct(Product product, User user) throws RemoteException;
-
-    //semaphores
-    void acquireSemaphore(User user) throws RemoteException;
-    void releaseSemaphore(User user) throws RemoteException;
+    ArrayList<Product> getProductByName(String productName) throws RemoteException;
+    void updateProduct(Product product, User user) throws RemoteException;
 }
