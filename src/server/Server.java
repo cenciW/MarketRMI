@@ -4,8 +4,10 @@ package server;
 import entitites.Product;
 import server.controllers.ProductController;
 import server.handlers.FileHandler;
-import contracts.ServerInterface;
+import contracts.ServerRemoteInterface;
 import entitites.User;
+import server.utils.Cache;
+import utils.DateUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,18 +22,15 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.concurrent.Semaphore;
 
-public class Server extends UnicastRemoteObject implements ServerInterface {
-    static ArrayList<User> usersList = new ArrayList<User>();
-    static ArrayList<Product> productsList = new ArrayList<Product>();
+public class Server extends UnicastRemoteObject implements ServerRemoteInterface {
     static FileHandler file;
     static ProductController productController;
     private final Semaphore semaphore;
 
     //número máximo de semafóros para adquirir
-    public static int permits = 2;
+    public static int permits = 1;
 
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
@@ -40,15 +39,44 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         this.semaphore = new Semaphore(permits, true);
     }
 
-    public static void main(String[] args) {
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    public void acquireSemaphore(User user) throws RemoteException {
+        try {
+            System.out.println("Semáforos disponíveis para adquirir: " + semaphore.availablePermits());
+            semaphore.acquire();
+            System.out.println("User: ["+user.getUsername() +"]:" +" Adquiriu o semaforo com sucesso (disponíveis): " + semaphore.availablePermits());
+        } catch (InterruptedException e) {
+            throw new RemoteException("Falha ao adquirir o semaforo: " + e.getMessage());
+        }
+    }
 
+    public void releaseSemaphore(User user) throws RemoteException {
+        semaphore.release();
+        System.out.println("User: ["+user.getUsername() +"] liberou o semaforo (disponíveis): " + semaphore.availablePermits());
+    }
+
+    private void notifyAllUsers(Product product) {
+        String messageToClients = "O user " + product.getUser()
+                + " atualizou o preço do produto {" + product.getName() + "} no mercado {"
+                + product.getMarketName() + "} para: €" + product.getPrice();
+
+        for (User user : Cache.usersList) {
+            //agora to enviando para todos os clientes
+            try {
+                user.getClientInterface().printOnClient(messageToClients);
+            } catch (RemoteException e) {
+                System.err.println("Ocorreu um erro ao notificar o cliente " + user.getUsername() + ": " + e.getMessage());
+            }
+        }
+    }
+
+    public static void main(String[] args) {
 
         file = new FileHandler(new File("src/server/database/usersList.txt").getAbsolutePath());
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         ) {
             productController = new ProductController();
+
             //Instancing Server
             Server server = new Server(permits);
             //creating registry
@@ -56,16 +84,6 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
             //rebind
             Naming.rebind("rmi://localhost:6666/market", server);
             System.out.println("Server preparado para receber clientes.");
-            String messageToClients;
-
-            while (true) {
-                System.out.print("Introduza a mensagem que deseja enviar para todos os clientes\n:> ");
-                messageToClients = br.readLine();
-                for (User user : usersList) {
-                    //agora to enviando para todos os clientes
-                    user.getClientInterface().printOnClient(messageToClients);
-                }
-            }
         } catch (IOException e) {
             System.err.println("Erro ao tentar ler o texto introduzido: " + e.getMessage());
         }
@@ -82,7 +100,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         } else {
             ret = true;
             System.out.println("Cliente: " + user.getUsername() + " entrou no servidor.");
-            usersList.add(new User(user.getUsername(), user.getPassword(), user.getClientInterface()));
+            Cache.usersList.add(new User(user.getUsername(), user.getPassword(), user.getClientInterface()));
         }
 
         System.out.print("Introduza a mensagem que deseja enviar para todos os clientes:\n:> ");
@@ -93,20 +111,20 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     @Override
     public void addProduct(Product product, User user) throws RemoteException {
         acquireSemaphore(user);
-        ZonedDateTime nowInUTC = ZonedDateTime.now();
-        Date d = Date.from(nowInUTC.toInstant());
-        String[] formatted = dateFormat.format(d).split(" ");
-        String formattedFinal = formatted[0] + "H" + formatted[1];
+        try {
+            productController.insertProduct(product, user);
+            System.out.println("O " + user.getUsername() + " adicionou o produto: " + product.writeLineFile());
+            user.getClientInterface().printOnClient("\nAdicionando produto:\n" + product.writeLineFile());
+        } catch (Exception e) {
+            System.out.println("Já existe um produto com nome {" + product.getName() + "} no mercado {" + product.getMarketName() + "}");
+            user.getClientInterface().printOnClient("Já existe um produto com nome {" + product.getName() + "} no mercado {" + product.getMarketName() + "}");
+        }
 
-        System.out.println("Usuário " + user.getUsername() + " irá adicionar um produto às " + formattedFinal);
-        productController.insertProduct(product, user);
 
-        System.out.println("O " + user.getUsername() + " adicionou o produto: " + product.writeLineFile());
-        user.getClientInterface().printOnClient("\nAdicionando produto:\n" + product.writeLineFile());
         releaseSemaphore(user);
     }
 
-
+    @Override
     public ArrayList<Product> getAllProducts(User user) throws RemoteException {
         ArrayList<Product> productsList = new ArrayList<>();
 
@@ -122,9 +140,15 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         return productsList;
     }
 
+    @Override
+    public ArrayList<Product> getProductByName(String productName) throws RemoteException{
+        return productController.getProduct(productName);
+    }
+
 
     @Override
     public ArrayList<Product> getProductByMarketName(User user, String marketName) {
+        ArrayList<Product> productsList = new ArrayList<>();
         try {
             acquireSemaphore(user);
             System.out.println("Listagem de produtos do mercado: " + marketName);
@@ -143,27 +167,21 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         return productsList;
     }
 
+
+
     //TODO: IMPLEMENT UPDATE PRODUCT
     @Override
-    public Product updateProduct(Product product, User user) throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public void acquireSemaphore(User user) throws RemoteException {
+    public void updateProduct(Product product, User user) throws RemoteException {
         try {
-            System.out.println("Semáforos disponíveis para adquirir: " + semaphore.availablePermits());
-            semaphore.acquire();
-            System.out.println("User: ["+user.getUsername() +"]:" +" Adquiriu o semaforo com sucesso (disponíveis): " + semaphore.availablePermits());
-        } catch (InterruptedException e) {
-            throw new RemoteException("Falha ao adquirir o semaforo: " + e.getMessage());
-        }
-    }
+            Product newProduct = productController.updateProduct(product);
 
-    @Override
-    public void releaseSemaphore(User user) throws RemoteException {
-        semaphore.release();
-        System.out.println("User: ["+user.getUsername() +"] liberou o semaforo (disponíveis): " + semaphore.availablePermits());
+            if (newProduct != null) {
+                notifyAllUsers(newProduct);
+            }
+        } catch (Exception e) {
+            System.out.println("Ocorreu um erro ao atualizar o produto: " + e.getMessage());
+            user.getClientInterface().printOnClient("Ocorreu um erro ao atualizar o produto: " + e.getMessage());
+        }
     }
 
 
@@ -171,9 +189,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     public void printOnServer(String clientName, String msgFromClient) throws RemoteException {
         if (msgFromClient.equalsIgnoreCase("Sair")) {
             //o cliente saiu, entao tenho que apagar a info dele
-            for (User user : usersList) {
+            for (User user : Cache.usersList) {
                 if (user.getUsername().equals(clientName)) {
-                    usersList.remove(user);
+                    Cache.usersList.remove(user);
                     break;
                 }
             }
