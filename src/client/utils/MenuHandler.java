@@ -1,6 +1,6 @@
 package client.utils;
 
-import contracts.ServerInterface;
+import contracts.ServerRemoteInterface;
 import entitites.Product;
 import entitites.User;
 
@@ -9,12 +9,13 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MenuHandler {
 
     private BufferedReader br;
-    private ServerInterface serverInterface;
+    private ServerRemoteInterface serverRemoteInterface;
     private User user;
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
@@ -53,14 +54,14 @@ public class MenuHandler {
             System.out.print("Nome do mercado que tem o produto: ");
             product.setMarketName(br.readLine());
 
-            ZonedDateTime nowInUTC = ZonedDateTime.now();
-            Date d = Date.from(nowInUTC.toInstant());
-            product.setDateInserted(d);
-            product.setDateLastModified(d);
+            //ZonedDateTime nowInUTC = ZonedDateTime.now();
+            //Date d = Date.from(nowInUTC.toInstant());
+            product.setDateInserted(new Date());
+            product.setDateLastModified(new Date());
 
-            product.setUser(user);
+            product.setUser(user.getUsername());
 
-            serverInterface.addProduct(product, user);
+            serverRemoteInterface.addProduct(product, user);
 
         } catch (RemoteException e) {
             System.err.println("Ocorreu um erro na comunicação com o servidor " + e.getMessage());
@@ -71,7 +72,7 @@ public class MenuHandler {
 
     private void listProducts() throws RemoteException {
         System.out.println("Listar produtos");
-        for (Product allProduct : serverInterface.getAllProducts(user)) {
+        for (Product allProduct : serverRemoteInterface.getAllProducts(user)) {
             System.out.println(allProduct.toString());
         }
         System.out.println();
@@ -80,22 +81,68 @@ public class MenuHandler {
     private void listProductsByMarketName(String marketName) throws RemoteException {
         System.out.println("Lista de produtos do mercado: " + marketName);
 
-        for (Product allProduct : serverInterface.getProductByMarketName(user, marketName)) {
-//            if (allProduct.getMarketName().equalsIgnoreCase(marketName)) {
+        for (Product allProduct : serverRemoteInterface.getProductByMarketName(user, marketName)) {
             System.out.println(allProduct.toString());
-//            }
         }
         System.out.println();
 
     }
 
-    private void updatePriceProduct() {
-        System.out.println("Atualizar produto");
+    private void listProductsByName(String productName) {
+        try {
+            ArrayList<Product> products = serverRemoteInterface.getProductByName(productName);
+
+            if (products.isEmpty()) {
+                System.out.println("Não há produtos registrados com o nome: " + productName);
+                return;
+            }
+
+            for (Product allProduct : products) {
+                System.out.println(allProduct.toString());
+            }
+        } catch (RemoteException e) {
+            System.err.println("Ocorreu um erro ao buscar o produto: " + e.getMessage());
+        }
+
+        System.out.println();
     }
 
-    public MenuHandler(BufferedReader br, ServerInterface serverInterface, User user) {
+    private void updatePriceProduct() {
+        try {
+            String name, market;
+            double price;
+
+            System.out.println("Atualize um Produto: ");
+
+            System.out.print("Nome do produto: ");
+            name = br.readLine();
+
+            do {
+                try {
+                    System.out.print("Preço do produto: ");
+                    price = Double.parseDouble(br.readLine());
+                    break;
+
+                } catch (NumberFormatException e) {
+                    System.out.println("ERRO: O preço do produto deve ser um número.");
+                }
+
+            } while (true);
+
+            System.out.print("Nome do mercado que tem o produto: ");
+            market = br.readLine();
+
+            serverRemoteInterface.updateProduct(new Product(name, price, market, user), user);
+
+        } catch (IOException e) {
+            System.out.println("Ocorreu um erro ao tentar atualizar o produto: " + e.getMessage());
+        }
+
+    }
+
+    public MenuHandler(BufferedReader br, ServerRemoteInterface serverRemoteInterface, User user) {
         this.br = br;
-        this.serverInterface = serverInterface;
+        this.serverRemoteInterface = serverRemoteInterface;
         this.user = user;
     }
 
@@ -132,7 +179,8 @@ public class MenuHandler {
                         System.out.println("========== MENU DE PRODUTOS ==========");
                         System.out.println("=== 1. Listar todos os produtos ======");
                         System.out.println("=== 2. Buscar produto por Mercado ====");
-                        System.out.println("=== 3. Voltar ao menu principal ======");
+                        System.out.println("=== 3. Buscar produto por Nome =======");
+                        System.out.println("=== 4. Voltar ao menu principal ======");
                         System.out.println("======================================");
                         System.out.print("Escolha uma opção: ");
 
@@ -149,6 +197,12 @@ public class MenuHandler {
                                 listProductsByMarketName(marketName);
                                 break;
                             case 3:
+                                System.out.print("Digite o nome do produto: ");
+                                String productName = br.readLine();
+
+                                listProductsByName(productName);
+                                break;
+                            case 4:
                                 showSubmenu = false; // Sai do submenu
                                 break;
                             default:
