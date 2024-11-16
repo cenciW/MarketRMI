@@ -115,10 +115,10 @@ public class MenuHandler {
             try {
                 item = Integer.parseInt(br.readLine());
             } catch (NumberFormatException e) {
-                System.err.println("Por favor, digite um número válido");
+                System.err.println("Por favor, digite um número válido: " + e.getMessage());
                 continue;
             } catch (IOException e) {
-                System.err.println("Erro ao utilizar o buffer");
+                System.err.println("Erro ao utilizar o buffer (I/O): " + e.getMessage());
                 System.exit(1);
             }
 
