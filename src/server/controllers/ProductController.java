@@ -2,29 +2,48 @@ package server.controllers;
 
 import entitites.Product;
 import entitites.User;
+import server.Server;
 import server.handlers.FileHandler;
 import server.interfaces.IProductController;
+import server.utils.Cache;
+import utils.DateUtils;
 
-import javax.swing.plaf.ProgressBarUI;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import static server.Server.dateFormat;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ProductController implements IProductController{
     FileHandler fileHandler;
     public ProductController() {
         fileHandler = new FileHandler(new File("src/server/database/productsList.txt").getAbsolutePath());
+
+        System.out.println("Preenchendo Cache de produtos: ");
+        Cache.productsList = this.getAllProducts();
+        System.out.println("-------------------------------");
     }
 
-    public Product insertProduct(Product product, User user) throws RemoteException {
+    private boolean existsProduct(Product product) {
+        ArrayList<Product> list = Cache.productsList;
+
+        return list.stream().anyMatch(p -> {
+            boolean b = p.getName().equalsIgnoreCase(product.getName()) && p.getMarketName().equalsIgnoreCase(product.getMarketName());
+            return b;
+        });
+    }
+
+    public Product insertProduct(Product product, User user) throws Exception {
         if(product.isValid()){
             //conseguiu instanciar o Objeto
+
+            if (existsProduct(product)) throw new Exception("Produto não encontrado");
+
+
             fileHandler.saveProduct(product);
+            Cache.productsList.add(product);
             return product;
 
         }else{
@@ -33,32 +52,58 @@ public class ProductController implements IProductController{
 
     }
 
-    public ArrayList<Product> getAllProducts() throws RemoteException {
+    public ArrayList<Product> getAllProducts() {
         //ler todas as linhas do file handler
         ArrayList<Product> products = new ArrayList<>();
 
         products = fileHandler.readAllProducts();
+        Cache.productsList = products;
 
         return products;
     }
 
-    public Product updateProduct(Product product) throws RemoteException {
+    public Product updateProduct(Product product) throws Exception {
+
+        //Procurar produto
+
+        Optional<Product> oldOptionalProduct = getProduct(product.getName()).stream()
+                .filter(p -> p.getMarketName().equalsIgnoreCase(product.getMarketName())).findFirst();
+
+        if (oldOptionalProduct.isEmpty()) throw new Exception("Produto não encontrado com nome {" + product.getName() + "} no mercado {" + product.getMarketName() + "}");
+
+
+
+        Product oldToNewProduct = oldOptionalProduct.get();
+
+        System.out.println("Atualizando o produto " + oldToNewProduct.toString());
+
+        oldToNewProduct.setDateLastModified(DateUtils.getUtcNow());
+        oldToNewProduct.setUser(product.getUser());
+        oldToNewProduct.setPrice(product.getPrice());
+
+        fileHandler.updateProductPrice(oldToNewProduct);
+
+
+
         return product;
     }
 
 
 
-    public Product getProduct(String productName) throws RemoteException {
-        return null;
+    public ArrayList<Product> getProduct(String productName) {
+
+        return new ArrayList<>(
+                Cache.productsList.stream()
+                        .filter(product -> product.getName().toLowerCase().contains(productName.toLowerCase()))
+                        .toList()
+        );
     }
 
-    public ArrayList<Product> getProductByMarket(String marketName) throws RemoteException {
-        ArrayList<Product> products = new ArrayList<>();
+    public ArrayList<Product> getProductByMarket(String marketName) {
         ArrayList<Product> productsReturn = new ArrayList<>();
 
-        products = fileHandler.readAllProducts();
-        for (Product product : products) {
-            if(product.getMarketName().equalsIgnoreCase(marketName)){
+        for (Product product : Cache.productsList) {
+            if(product.getMarketName().contains(marketName)){
                 productsReturn.add(product);
             }
         }
