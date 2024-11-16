@@ -19,4 +19,5 @@ public interface ServerInterface extends Remote {
     void addProduct(Product product, User user) throws RemoteException;
     ArrayList<Product> getAllProducts() throws RemoteException;
     ArrayList<Product> getProductByMarketName(String marketName) throws RemoteException;
+    Product updateProduct(Product product, User user) throws RemoteException;
 }

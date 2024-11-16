@@ -127,6 +127,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         return productsList;
     }
 
+    //TODO: IMPLEMENT UPDATE PRODUCT
+    @Override
+    public Product updateProduct(Product product, User user) throws RemoteException {
+        return null;
+    }
+
 
     @Override
     public void printOnServer(String clientName, String msgFromClient) throws RemoteException {
