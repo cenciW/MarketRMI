@@ -2,9 +2,10 @@ package server.handlers;
 
 import entitites.Product;
 import entitites.User;
+import server.utils.Cache;
+import utils.DateUtils;
 
 import java.io.*;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.Optional;
 public class FileHandler {
     private final String filePath;
     private File file;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd");
 
     public FileHandler(String filePath) {
         this.filePath = filePath;
@@ -83,15 +83,19 @@ public class FileHandler {
     }
 
     // Método para atualizar o preço de um produto
-    public void updateProductPrice(String productName, double newPrice) {
+    public void updateProductPrice(Product newProduct) {
         List<Product> products = readAllProducts();
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
-            for (Product product : products) {
-                if (product.getName().equals(productName)) {
-                    product.setPrice(newPrice);
-                    product.setDateLastModified(new Date()); // Atualiza a data de modificação
+            bw.write("name;price;marketName;dateInserted;dateLastModified;username");
+            bw.newLine();
+            for (Product p : products) {
+                if (p.getName().equalsIgnoreCase(newProduct.getName())
+                        && p.getMarketName().equalsIgnoreCase(newProduct.getMarketName())) {
+                    p.setPrice(newProduct.getPrice());
+                    p.setDateLastModified(newProduct.getDateLastModified()); // Atualiza a data de modificação
+                    p.setUser(newProduct.getUser());
                 }
-                bw.write(product.writeLineFile());
+                bw.write(p.writeLineFile());
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -130,13 +134,13 @@ public class FileHandler {
             double price = Double.parseDouble(fields[1]);
             String marketName = fields[2];
 
-            Date dateInserted = dateFormat.parse(fields[3].replace("H", " "));
-            Date dateLastModified = dateFormat.parse(fields[4].replace("H", " "));
+            Date dateInserted = DateUtils.stringToDate(fields[3]);
+            Date dateLastModified = DateUtils.stringToDate(fields[4]);
 
             String username = fields[5];
 
             return new Product(name, price, marketName, dateInserted, dateLastModified, username);
-        } catch (ParseException | NumberFormatException e) {
+        } catch (Exception e) {
             System.out.println("Erro ao converter a linha em um produto: " + e.getMessage());
             return null;
         }
