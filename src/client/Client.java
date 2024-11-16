@@ -66,6 +66,5 @@ public class Client extends UnicastRemoteObject implements ClientRemoteInterface
     @Override
     public void printOnClient(String msgFromServer) throws RemoteException {
         System.out.println("O servidor enviou: " + msgFromServer);
-        System.out.print("Introduza uma mensagem para enviar ao servidor\n:> ");
     }
 }

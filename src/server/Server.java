@@ -3,6 +3,7 @@ package server;
 
 import entitites.Product;
 import server.controllers.ProductController;
+import server.controllers.UserController;
 import server.handlers.FileHandler;
 import contracts.ServerRemoteInterface;
 import entitites.User;
@@ -27,6 +28,7 @@ import java.util.concurrent.Semaphore;
 public class Server extends UnicastRemoteObject implements ServerRemoteInterface {
     static FileHandler file;
     static ProductController productController;
+    static UserController userController;
     private final Semaphore semaphore;
 
     //número máximo de semafóros para adquirir
@@ -76,6 +78,7 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         ) {
             productController = new ProductController();
+            userController = new UserController();
 
             //Instancing Server
             Server server = new Server(permits);
@@ -91,20 +94,7 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
 
     @Override
     public boolean login(User user) throws RemoteException {
-
-        Optional<User> userOptional = file.searchUserOnFile(user);
-        boolean ret = false;
-        if (userOptional.isEmpty()) {
-            System.out.println("Cliente: " + user.getUsername() + " tentativa de login não autorizada");
-            ret = false;
-        } else {
-            ret = true;
-            System.out.println("Cliente: " + user.getUsername() + " entrou no servidor.");
-            Cache.usersList.add(new User(user.getUsername(), user.getPassword(), user.getClientInterface()));
-        }
-
-        System.out.print("Introduza a mensagem que deseja enviar para todos os clientes:\n:> ");
-        return ret;
+        return userController.login(user);
     }
 
 
@@ -169,9 +159,9 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
 
 
 
-    //TODO: IMPLEMENT UPDATE PRODUCT
     @Override
     public void updateProduct(Product product, User user) throws RemoteException {
+        acquireSemaphore(user);
         try {
             Product newProduct = productController.updateProduct(product);
 
@@ -182,27 +172,6 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
             System.out.println("Ocorreu um erro ao atualizar o produto: " + e.getMessage());
             user.getClientInterface().printOnClient("Ocorreu um erro ao atualizar o produto: " + e.getMessage());
         }
-    }
-
-
-    @Override
-    public void printOnServer(String clientName, String msgFromClient) throws RemoteException {
-        if (msgFromClient.equalsIgnoreCase("Sair")) {
-            //o cliente saiu, entao tenho que apagar a info dele
-            for (User user : Cache.usersList) {
-                if (user.getUsername().equals(clientName)) {
-                    Cache.usersList.remove(user);
-                    break;
-                }
-            }
-            System.out.println("O cliente " + clientName + " saiu.");
-
-        } else {
-            System.out.println("O cliente: " + clientName + " enviou: " + msgFromClient);
-        }
-
-        //server pedindo para enviarmos as mensagens aos outros clientes
-        System.out.print("Introduza a mensagem que deseja enviar para todos os clientes:\n:> ");
-        //se quiser sair tem que limpar a estrutura do servidor
+        releaseSemaphore(user);
     }
 }
