@@ -1,8 +1,8 @@
 package client;
 
 import client.utils.MenuHandler;
-import contracts.ServerInterface;
-import contracts.ClientInterface;
+import contracts.ServerRemoteInterface;
+import contracts.ClientRemoteInterface;
 import entitites.User;
 
 import java.io.BufferedReader;
@@ -13,7 +13,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class Client extends UnicastRemoteObject implements ClientInterface {
+public class Client extends UnicastRemoteObject implements ClientRemoteInterface {
     protected Client() throws RemoteException {
         super();
     }
@@ -24,7 +24,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         ) {
             //looking for the server
-            ServerInterface serverInterface = (ServerInterface) Naming.lookup("rmi://localhost:6666/market");
+            ServerRemoteInterface serverRemoteInterface = (ServerRemoteInterface) Naming.lookup("rmi://localhost:6666/market");
 
             //here server and client are connected
             Client client = new Client();
@@ -44,7 +44,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
             //buscar no arquivo de texto com o file handler
 
-            boolean auth = serverInterface.login(user);
+            boolean auth = serverRemoteInterface.login(user);
             if(auth) {
                 System.out.println("Usuário autenticado com sucesso!");
             }else{
@@ -52,7 +52,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
                 System.exit(0);
             }
 
-            new MenuHandler(br, serverInterface, user).startMenu();
+            new MenuHandler(br, serverRemoteInterface, user).startMenu();
 
             System.exit(0);
         } catch (IOException e) {

@@ -1,6 +1,6 @@
 package entitites;
 
-import contracts.ClientInterface;
+import contracts.ClientRemoteInterface;
 
 import java.io.Serializable;
 
@@ -33,16 +33,16 @@ import java.io.Serializable;
 */
 public class User implements Serializable {
     private String username, password;
-    private ClientInterface clientInterface;
+    private ClientRemoteInterface clientRemoteInterface;
     boolean isLoggedIn = false;
 
     public User(){
 
     }
-    public User(String username, String password, ClientInterface clientInterface) {
+    public User(String username, String password, ClientRemoteInterface clientRemoteInterface) {
         this.username = username;
         this.password = password;
-        this.clientInterface = clientInterface;
+        this.clientRemoteInterface = clientRemoteInterface;
     }
 
     // Método para login, com limite de uma tentativa
@@ -76,12 +76,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public ClientInterface getClientInterface() {
-        return clientInterface;
+    public ClientRemoteInterface getClientInterface() {
+        return clientRemoteInterface;
     }
 
-    public void setClientInterface(ClientInterface clientInterface) {
-        this.clientInterface = clientInterface;
+    public void setClientInterface(ClientRemoteInterface clientRemoteInterface) {
+        this.clientRemoteInterface = clientRemoteInterface;
     }
 }
 
