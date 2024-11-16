@@ -7,9 +7,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface IProductController{
-    Product insertProduct(Product product, User user) throws RemoteException;
-    ArrayList<Product> getAllProducts() throws RemoteException;
-    Product updateProduct(Product product) throws RemoteException;
-    Product getProduct(String productName) throws RemoteException;
-    ArrayList<Product> getProductByMarket(String marketName) throws RemoteException;
+    Product insertProduct(Product product, User user) throws Exception;
+    ArrayList<Product> getAllProducts();
+    Product updateProduct(Product product) throws Exception;
+    ArrayList<Product> getProduct(String productName);
+    ArrayList<Product> getProductByMarket(String marketName);
 }
