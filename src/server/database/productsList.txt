@@ -8,3 +8,6 @@ market;10.0;market;09:59:33H16-11-2024;09:59:33H16-11-2024;adm
 Joao;100.0;Pingo Doce;10:12:01H16-11-2024;10:12:01H16-11-2024;adm
 Isqueiro;2.5;Mariachi;10:17:59H16-11-2024;10:17:59H16-11-2024;adm
 Razer Deathadder;50.5;Worten;10:19:17H16-11-2024;10:19:17H16-11-2024;ze
+teste;10.0;prodo;10:39:24H16-11-2024;10:39:24H16-11-2024;adm
+produto foda;900.0;mercado dos deuses;10:40:32H16-11-2024;10:40:32H16-11-2024;adm
+Teste;90.0;Pingo Doce;11:04:01H16-11-2024;11:04:01H16-11-2024;ze

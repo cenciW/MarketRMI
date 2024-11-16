@@ -21,21 +21,28 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.concurrent.Semaphore;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
     static ArrayList<User> usersList = new ArrayList<User>();
     static ArrayList<Product> productsList = new ArrayList<Product>();
     static FileHandler file;
     static ProductController productController;
+    private final Semaphore semaphore;
+
+    //número máximo de semafóros para adquirir
+    public static int permits = 2;
 
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
-    public Server() throws RemoteException {
+    public Server(int permits) throws RemoteException {
         super();
+        this.semaphore = new Semaphore(permits, true);
     }
 
     public static void main(String[] args) {
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
 
         file = new FileHandler(new File("src/server/database/usersList.txt").getAbsolutePath());
         try (
@@ -43,7 +50,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
         ) {
             productController = new ProductController();
             //Instancing Server
-            Server server = new Server();
+            Server server = new Server(permits);
             //creating registry
             LocateRegistry.createRegistry(6666);
             //rebind
@@ -85,6 +92,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
     @Override
     public void addProduct(Product product, User user) throws RemoteException {
+        acquireSemaphore(user);
         ZonedDateTime nowInUTC = ZonedDateTime.now();
         Date d = Date.from(nowInUTC.toInstant());
         String[] formatted = dateFormat.format(d).split(" ");
@@ -95,32 +103,40 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 
         System.out.println("O " + user.getUsername() + " adicionou o produto: " + product.writeLineFile());
         user.getClientInterface().printOnClient("\nAdicionando produto:\n" + product.writeLineFile());
+        releaseSemaphore(user);
     }
 
-    public ArrayList<Product> getAllProducts() throws RemoteException {
+
+    public ArrayList<Product> getAllProducts(User user) throws RemoteException {
+        ArrayList<Product> productsList = new ArrayList<>();
+
+        acquireSemaphore(user);
         productsList = productController.getAllProducts();
 
         System.out.println("Listagem de todos os produtos: ");
         for (Product product : productsList) {
             System.out.println(product.writeLineFile());
         }
+        releaseSemaphore(user);
+
         return productsList;
     }
 
 
     @Override
-    public ArrayList<Product> getProductByMarketName(String marketName) {
+    public ArrayList<Product> getProductByMarketName(User user, String marketName) {
         try {
+            acquireSemaphore(user);
             System.out.println("Listagem de produtos do mercado: " + marketName);
             productsList = productController.getProductByMarket(marketName);
             for (Product product : productsList) {
                 System.out.println(product.writeLineFile());
             }
-
+            releaseSemaphore(user);
         } catch (RemoteException e) {
             System.out.println("Erro: " + e.getMessage());
         }
-        if(productsList.isEmpty()) {
+        if (productsList.isEmpty()) {
             System.out.println("Lista de produtos vazia.");
             return new ArrayList<>();
         }
@@ -131,6 +147,23 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
     @Override
     public Product updateProduct(Product product, User user) throws RemoteException {
         return null;
+    }
+
+    @Override
+    public void acquireSemaphore(User user) throws RemoteException {
+        try {
+            System.out.println("Semáforos disponíveis para adquirir: " + semaphore.availablePermits());
+            semaphore.acquire();
+            System.out.println("User: ["+user.getUsername() +"]:" +" Adquiriu o semaforo com sucesso (disponíveis): " + semaphore.availablePermits());
+        } catch (InterruptedException e) {
+            throw new RemoteException("Falha ao adquirir o semaforo: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void releaseSemaphore(User user) throws RemoteException {
+        semaphore.release();
+        System.out.println("User: ["+user.getUsername() +"] liberou o semaforo (disponíveis): " + semaphore.availablePermits());
     }
 
 

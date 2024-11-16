@@ -71,7 +71,7 @@ public class MenuHandler {
 
     private void listProducts() throws RemoteException {
         System.out.println("Listar produtos");
-        for (Product allProduct : serverInterface.getAllProducts()) {
+        for (Product allProduct : serverInterface.getAllProducts(user)) {
             System.out.println(allProduct.toString());
         }
         System.out.println();
@@ -80,7 +80,7 @@ public class MenuHandler {
     private void listProductsByMarketName(String marketName) throws RemoteException {
         System.out.println("Lista de produtos do mercado: " + marketName);
 
-        for (Product allProduct : serverInterface.getProductByMarketName(marketName)) {
+        for (Product allProduct : serverInterface.getProductByMarketName(user, marketName)) {
 //            if (allProduct.getMarketName().equalsIgnoreCase(marketName)) {
             System.out.println(allProduct.toString());
 //            }

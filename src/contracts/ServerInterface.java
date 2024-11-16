@@ -17,7 +17,11 @@ public interface ServerInterface extends Remote {
     boolean login(User user) throws RemoteException;
 
     void addProduct(Product product, User user) throws RemoteException;
-    ArrayList<Product> getAllProducts() throws RemoteException;
-    ArrayList<Product> getProductByMarketName(String marketName) throws RemoteException;
+    ArrayList<Product> getAllProducts(User user) throws RemoteException;
+    ArrayList<Product> getProductByMarketName(User user, String marketName) throws RemoteException;
     Product updateProduct(Product product, User user) throws RemoteException;
+
+    //semaphores
+    void acquireSemaphore(User user) throws RemoteException;
+    void releaseSemaphore(User user) throws RemoteException;
 }
