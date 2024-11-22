@@ -55,49 +55,123 @@ src/
 ```
 
 ## Screenshots
+
+[//]: # (### Server Start)
+
+[//]: # (![Server Start]&#40;src/images/server_start.png&#41;)
+
+[//]: # ()
+[//]: # (### Client Start)
+
+[//]: # (![Client Start]&#40;src/images/client_start.png&#41;)
+
+[//]: # ()
+[//]: # (### Client 'adm' Login)
+
+[//]: # (![Client adm Login]&#40;src/images/3_client_login.png&#41;)
+
+[//]: # ()
+[//]: # (### Server Feedback to Client 'adm' Login)
+
+[//]: # (![Server Feedback adm]&#40;src/images/4_server_feedback.png&#41;)
+
+[//]: # ()
+[//]: # (### Client 'ze' Login)
+
+[//]: # (![Client ze Login]&#40;src/images/5_client_login2.png&#41;)
+
+[//]: # ()
+[//]: # (### Server Feedback to Client 'ze' Login)
+
+[//]: # (![Client ze Login]&#40;src/images/6_server_feedback.png&#41;)
+
+[//]: # ()
+[//]: # (### Client 'ze' Insert Product)
+
+[//]: # (![Client Insert]&#40;src/images/7_client_insert_product.png&#41;)
+
+[//]: # ()
+[//]: # (### Menu to choose type of list)
+
+[//]: # (![ListsMenu]&#40;src/images/8_lists_menu_client.png&#41;)
+
+[//]: # ()
+[//]: # (### List all products)
+
+[//]: # (![ListsMenu]&#40;src/images/9_lists_all_products_client.png&#41;)
+
+[//]: # ()
+[//]: # (### List products by market)
+
+[//]: # (![ListsMenu]&#40;src/images/10_lists_product_by_market_client.png&#41;)
+
+[//]: # ()
+[//]: # (### List product by name)
+
+[//]: # (![ListsMenu]&#40;src/images/11_lists_product_by_name_client.png&#41;)
+
+[//]: # ()
+[//]: # (### Client 'ze' update product)
+
+[//]: # (![ListsMenu]&#40;src/images/12_update_product_client.png&#41;)
+
+[//]: # ()
+[//]: # (### Notify All Clients update product)
+
+[//]: # (![ListsMenu]&#40;src/images/13_notify_all_clients_when_update.png&#41;)
+
+[//]: # ()
+[//]: # ()
+[//]: # (### Server Logs)
+
+[//]: # (![ListsMenu]&#40;src/images/14_server_logs.png&#41;)
+
+[//]: # (![ListsMenu]&#40;src/images/15_server_logs.png&#41;)
+
+## Screenshots
 ### Server Start
-![Server Start](src/images/server_start.png)
+<img src="src/images/server_start.png" alt="Server Start" width="600">
 
 ### Client Start
-![Client Start](src/images/client_start.png)
+<img src="src/images/client_start.png" alt="Client Start" width="600">
 
 ### Client 'adm' Login
-![Client adm Login](src/images/3_client_login.png)
+<img src="src/images/3_client_login.png" alt="Client adm Login" width="600">
 
 ### Server Feedback to Client 'adm' Login
-![Server Feedback adm](src/images/4_server_feedback.png)
+<img src="src/images/4_server_feedback.png" alt="Server Feedback adm" width="600">
 
 ### Client 'ze' Login
-![Client ze Login](src/images/5_client_login2.png)
+<img src="src/images/5_client_login2.png" alt="Client ze Login" width="600">
 
 ### Server Feedback to Client 'ze' Login
-![Client ze Login](src/images/6_server_feedback.png)
+<img src="src/images/6_server_feedback.png" alt="Client ze Login" width="600">
 
 ### Client 'ze' Insert Product
-![Client Insert](src/images/7_client_insert_product.png)
+<img src="src/images/7_client_insert_product.png" alt="Client Insert" width="600">
 
 ### Menu to choose type of list
-![ListsMenu](src/images/8_lists_menu_client.png)
+<img src="src/images/8_lists_menu_client.png" alt="ListsMenu" width="600">
 
 ### List all products
-![ListsMenu](src/images/9_lists_all_products_client.png)
+<img src="src/images/9_lists_all_products_client.png" alt="ListsMenu" width="600">
 
 ### List products by market
-![ListsMenu](src/images/10_lists_product_by_market_client.png)
+<img src="src/images/10_lists_product_by_market_client.png" alt="ListsMenu" width="600">
 
 ### List product by name
-![ListsMenu](src/images/11_lists_product_by_name_client.png)
+<img src="src/images/11_lists_product_by_name_client.png" alt="ListsMenu" width="600">
 
 ### Client 'ze' update product
-![ListsMenu](src/images/12_update_product_client.png)
+<img src="src/images/12_update_product_client.png" alt="ListsMenu" width="600">
 
 ### Notify All Clients update product
-![ListsMenu](src/images/13_notify_all_clients_when_update.png)
-
+<img src="src/images/13_notify_all_clients_when_update.png" alt="ListsMenu" width="600">
 
 ### Server Logs
-![ListsMenu](src/images/14_server_logs.png)
-![ListsMenu](src/images/15_server_logs.png)
+<img src="src/images/14_server_logs.png" alt="ListsMenu" width="600">
+<img src="src/images/15_server_logs.png" alt="ListsMenu" width="600">
+
 
 
 
@@ -107,5 +181,5 @@ For any questions or suggestions, please contact:
   - [dev.zecenci@gmail.com]
   - [https://www.linkedin.com/in/jose-augusto-cenci-castilho-94282420a/]
 - Jadir Pires de Borba Junior:
-  - [Email]
+  - [jadirjunior8@gmail.com]
   - [https://www.linkedin.com/in/jadir-borba-junior/]
