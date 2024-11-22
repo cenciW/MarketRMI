@@ -8,21 +8,19 @@ import server.handlers.FileHandler;
 import contracts.ServerRemoteInterface;
 import entitites.User;
 import server.utils.Cache;
-import utils.DateUtils;
+
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
 import java.util.concurrent.Semaphore;
 
 public class Server extends UnicastRemoteObject implements ServerRemoteInterface {
@@ -34,7 +32,7 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
     //número máximo de semafóros para adquirir
     public static int permits = 1;
 
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+//    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
     public Server(int permits) throws RemoteException {
         super();
@@ -64,9 +62,16 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
         for (User user : Cache.usersList) {
             //agora to enviando para todos os clientes
             try {
+                //verificar se ninguem deslogou antes de enviar a mensagem
+
                 user.getClientInterface().printOnClient(messageToClients);
-            } catch (RemoteException e) {
-                System.err.println("Ocorreu um erro ao notificar o cliente " + user.getUsername() + ": " + e.getMessage());
+            }
+            catch(ConnectException e){
+
+                System.err.println("[SERVER]: O cliente: " + user.getUsername() + " se desconectou, portanto não recebeu a mensagem!");
+            }
+            catch (RemoteException e) {
+                System.err.println("[SERVER]: Ocorreu um erro ao notificar o cliente " + user.getUsername() + ": " + e.getMessage());
             }
         }
     }
@@ -74,9 +79,7 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
     public static void main(String[] args) {
 
         file = new FileHandler(new File("src/server/database/usersList.txt").getAbsolutePath());
-        try (
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        ) {
+        try {
             productController = new ProductController();
             userController = new UserController();
 
@@ -116,7 +119,7 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
 
     @Override
     public ArrayList<Product> getAllProducts(User user) throws RemoteException {
-        ArrayList<Product> productsList = new ArrayList<>();
+        ArrayList<Product> productsList;
 
         acquireSemaphore(user);
         productsList = productController.getAllProducts();
