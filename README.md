@@ -18,6 +18,8 @@
     - Client Logout
 - Server functionalities:
   - Logs
+  - Manage users using txt
+  - Manage products list using txt
 
 ## Project Structure
 ```
