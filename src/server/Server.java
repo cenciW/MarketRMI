@@ -43,17 +43,17 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
 
     public void acquireSemaphore(User user) throws RemoteException {
         try {
-            System.out.println("Semáforos disponíveis para adquirir: " + semaphore.availablePermits());
+            System.out.println("[SERVER]: Semáforos disponíveis para adquirir: " + semaphore.availablePermits());
             semaphore.acquire();
-            System.out.println("User: ["+user.getUsername() +"]:" +" Adquiriu o semaforo com sucesso (disponíveis): " + semaphore.availablePermits());
+            System.out.println("[SERVER]: User: ["+user.getUsername() +"]:" +" Adquiriu o semaforo com sucesso (disponíveis): " + semaphore.availablePermits());
         } catch (InterruptedException e) {
-            throw new RemoteException("Falha ao adquirir o semaforo: " + e.getMessage());
+            throw new RemoteException("[SERVER]: Falha ao adquirir o semaforo: " + e.getMessage());
         }
     }
 
     public void releaseSemaphore(User user) throws RemoteException {
         semaphore.release();
-        System.out.println("User: ["+user.getUsername() +"] liberou o semaforo (disponíveis): " + semaphore.availablePermits());
+        System.out.println("[SERVER]: User: ["+user.getUsername() +"] liberou o semaforo (disponíveis): " + semaphore.availablePermits());
     }
 
     private void notifyAllUsers(Product product) {
@@ -86,9 +86,9 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
             LocateRegistry.createRegistry(6666);
             //rebind
             Naming.rebind("rmi://localhost:6666/market", server);
-            System.out.println("Server preparado para receber clientes.");
+            System.out.println("[SERVER]: Server preparado para receber clientes.");
         } catch (IOException e) {
-            System.err.println("Erro ao tentar ler o texto introduzido: " + e.getMessage());
+            System.err.println("[SERVER]: Erro ao tentar ler o texto introduzido: " + e.getMessage());
         }
     }
 
@@ -103,10 +103,10 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
         acquireSemaphore(user);
         try {
             productController.insertProduct(product, user);
-            System.out.println("O " + user.getUsername() + " adicionou o produto: " + product.writeLineFile());
+            System.out.println("[SERVER]: O " + user.getUsername() + " adicionou o produto: " + product.writeLineFile());
             user.getClientInterface().printOnClient("\nAdicionando produto:\n" + product.writeLineFile());
         } catch (Exception e) {
-            System.out.println("Já existe um produto com nome {" + product.getName() + "} no mercado {" + product.getMarketName() + "}");
+            System.out.println("[SERVER]: Já existe um produto com nome {" + product.getName() + "} no mercado {" + product.getMarketName() + "}");
             user.getClientInterface().printOnClient("Já existe um produto com nome {" + product.getName() + "} no mercado {" + product.getMarketName() + "}");
         }
 
@@ -121,7 +121,7 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
         acquireSemaphore(user);
         productsList = productController.getAllProducts();
 
-        System.out.println("Listagem de todos os produtos: ");
+        System.out.println("[SERVER]: Listagem de todos os produtos: ");
         for (Product product : productsList) {
             System.out.println(product.writeLineFile());
         }
@@ -141,17 +141,17 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
         ArrayList<Product> productsList = new ArrayList<>();
         try {
             acquireSemaphore(user);
-            System.out.println("Listagem de produtos do mercado: " + marketName);
+            System.out.println("[SERVER]: Listagem de produtos do mercado: " + marketName);
             productsList = productController.getProductByMarket(marketName);
             for (Product product : productsList) {
                 System.out.println(product.writeLineFile());
             }
             releaseSemaphore(user);
         } catch (RemoteException e) {
-            System.out.println("Erro: " + e.getMessage());
+            System.out.println("[SERVER]: Erro: " + e.getMessage());
         }
         if (productsList.isEmpty()) {
-            System.out.println("Lista de produtos vazia.");
+            System.out.println("[SERVER]: Lista de produtos vazia.");
             return new ArrayList<>();
         }
         return productsList;
@@ -169,7 +169,7 @@ public class Server extends UnicastRemoteObject implements ServerRemoteInterface
                 notifyAllUsers(newProduct);
             }
         } catch (Exception e) {
-            System.out.println("Ocorreu um erro ao atualizar o produto: " + e.getMessage());
+            System.out.println("[SERVER]: Ocorreu um erro ao atualizar o produto: " + e.getMessage());
             user.getClientInterface().printOnClient("Ocorreu um erro ao atualizar o produto: " + e.getMessage());
         }
         releaseSemaphore(user);
