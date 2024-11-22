@@ -2,19 +2,14 @@ package server.controllers;
 
 import entitites.Product;
 import entitites.User;
-import server.Server;
 import server.handlers.FileHandler;
 import server.interfaces.IProductController;
 import server.utils.Cache;
 import utils.DateUtils;
 
 import java.io.File;
-import java.lang.reflect.Array;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class ProductController implements IProductController{
     FileHandler fileHandler;
@@ -54,7 +49,7 @@ public class ProductController implements IProductController{
 
     public ArrayList<Product> getAllProducts() {
         //ler todas as linhas do file handler
-        ArrayList<Product> products = new ArrayList<>();
+        ArrayList<Product> products;
 
         products = fileHandler.readAllProducts();
         Cache.productsList = products;
@@ -75,11 +70,13 @@ public class ProductController implements IProductController{
 
         Product oldToNewProduct = oldOptionalProduct.get();
 
-        System.out.println("Atualizando o produto " + oldToNewProduct.toString());
+
 
         oldToNewProduct.setDateLastModified(DateUtils.getUtcNow());
         oldToNewProduct.setUser(product.getUser());
         oldToNewProduct.setPrice(product.getPrice());
+
+        System.out.println("Produto atualizado " + oldToNewProduct.toString());
 
         fileHandler.updateProductPrice(oldToNewProduct);
 
